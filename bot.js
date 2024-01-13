@@ -43,14 +43,13 @@ const main = async () => {
 		switch (msg.data) {
 			case 'man':
 				userStorage[chat_id] = { gender: msg.data }
-				console.log(userStorage[chat_id].gender)
-				await gender_option(bot, msg, userStorage[chat_id])
+				await gender_option(bot, msg, userStorage)
 				logger.info(`${user} select ${userStorage[chat_id].gender}`)
 				break
 
 			case 'woman':
 				userStorage[chat_id] = { gender: msg.data }
-				await gender_option(bot, msg, userStorage[chat_id])
+				await gender_option(bot, msg, userStorage)
 				logger.info(`${user} select ${userStorage[chat_id].gender}`)
 				break
 		}
@@ -60,21 +59,23 @@ const main = async () => {
 		const chatId = msg.chat.id
 		const messageId = msg.message_id
 		let checked = false
+		console.log(userStorage[chatId])
 
 		if (userStorage[chatId]) {
 			switch (userStorage[chatId].state) {
 				case 'awaitText':
-					console.log(userStorage[chatId])
 					userStorage[chatId] = {
 						search: msg.text,
+						gender: userStorage[chatId].gender,
 					}
-					const response =
-						await fetch(`https://www.basketshop.ru/?digiSearch=true&term=${
-							userStorage[chatId].search
-						}${
-							userStorage[chatId].gender === 'man' ? '%20мужские' : '%20женские'
-						}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
-					`)
+
+					link = `https://www.basketshop.ru/?digiSearch=true&term=${
+						userStorage[chatId].search
+					}${
+						userStorage[chatId].gender == 'man' ? '%20мужские' : '%20женские'
+					}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
+					`
+					const response = await fetch(link)
 
 					if (response.status === 200) {
 						console.log('ok')

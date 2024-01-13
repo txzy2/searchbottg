@@ -17,7 +17,10 @@ const gender_option = async (bot, msg, userStorage) => {
 			// }),
 		}
 	)
-	userStorage[msg.message.chat.id] = { state: 'awaitText' }
+	userStorage[msg.message.chat.id] = {
+		state: 'awaitText',
+		gender: userStorage[msg.message.chat.id].gender,
+	}
 }
 
 module.exports = {

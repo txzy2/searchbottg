@@ -16,7 +16,7 @@ const main = async () => {
 		bot.deleteMessage(msg.chat.id, msg.message_id)
 		bot.sendMessage(
 			msg.chat.id,
-			`<b>✌🏼 Привет <i>${msg.chat.first_name}</i></b>! Я помогу тебе найти кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол</i>`,
+			`<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
 			{
 				parse_mode: 'HTML',
 				reply_markup: JSON.stringify({
@@ -39,18 +39,50 @@ const main = async () => {
 		const chat_id = msg.message.chat.id
 		const message_id = msg.message.message_id
 		const user = msg.message.chat.first_name
-		userStorage[chat_id] = { gender: msg.data }
 
 		switch (msg.data) {
 			case 'man':
-				await gender_option(bot, msg, userStorage)
+				userStorage[chat_id] = { gender: msg.data }
+				console.log(userStorage[chat_id].gender)
+				await gender_option(bot, msg, userStorage[chat_id])
 				logger.info(`${user} select ${userStorage[chat_id].gender}`)
 				break
 
 			case 'woman':
-				await gender_option(bot, msg, userStorage)
+				userStorage[chat_id] = { gender: msg.data }
+				await gender_option(bot, msg, userStorage[chat_id])
 				logger.info(`${user} select ${userStorage[chat_id].gender}`)
 				break
+		}
+	})
+
+	bot.on('text', async msg => {
+		const chatId = msg.chat.id
+		const messageId = msg.message_id
+		let checked = false
+
+		if (userStorage[chatId]) {
+			switch (userStorage[chatId].state) {
+				case 'awaitText':
+					console.log(userStorage[chatId])
+					userStorage[chatId] = {
+						search: msg.text,
+					}
+					const response =
+						await fetch(`https://www.basketshop.ru/?digiSearch=true&term=${
+							userStorage[chatId].search
+						}${
+							userStorage[chatId].gender === 'man' ? '%20мужские' : '%20женские'
+						}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
+					`)
+
+					if (response.status === 200) {
+						console.log('ok')
+						bot.sendMessage(chatId, link)
+					} else {
+						console.log('false')
+					}
+			}
 		}
 	})
 }

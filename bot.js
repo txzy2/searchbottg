@@ -37,7 +37,6 @@ const main = async () => {
 	/*Callbacks controller*/
 	bot.on('callback_query', async msg => {
 		const chat_id = msg.message.chat.id
-		const message_id = msg.message.message_id
 		const user = msg.message.chat.first_name
 
 		switch (msg.data) {
@@ -58,7 +57,6 @@ const main = async () => {
 	bot.on('text', async msg => {
 		const chatId = msg.chat.id
 		const messageId = msg.message_id
-		let checked = false
 		console.log(userStorage[chatId])
 
 		if (userStorage[chatId]) {
@@ -69,11 +67,9 @@ const main = async () => {
 						gender: userStorage[chatId].gender,
 					}
 
-					link = `https://www.basketshop.ru/?digiSearch=true&term=${
-						userStorage[chatId].search
-					}${
-						userStorage[chatId].gender == 'man' ? '%20мужские' : '%20женские'
-					}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
+					link = `https://www.basketshop.ru/?digiSearch=true&term=${userStorage[chatId].search
+						}${userStorage[chatId].gender == 'man' ? '%20мужские' : '%20женские'
+						}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
 					`
 					const response = await fetch(link)
 

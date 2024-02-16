@@ -51,6 +51,22 @@ const main = async () => {
 				await gender_option(bot, msg, userStorage)
 				logger.info(`${user} select ${userStorage[chat_id].gender}`)
 				break
+
+			case 'home':
+				bot.deleteMessage(chat_id, msg.message.message_id)
+				bot.sendMessage(chat_id, `<b>✌🏼 Yo <i>${msg.message.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
+					{
+						parse_mode: 'HTML',
+						reply_markup: JSON.stringify({
+							inline_keyboard: [
+								[
+									{ text: 'Мужские', callback_data: 'man' },
+									{ text: 'Женские', callback_data: 'woman' },
+								],
+							],
+						}),
+
+					})
 		}
 	})
 
@@ -67,18 +83,24 @@ const main = async () => {
 						gender: userStorage[chatId].gender,
 					}
 
-					link = `https://www.basketshop.ru/?digiSearch=true&term=${userStorage[chatId].search
+					userStorage[chatId].link = `https://www.basketshop.ru/?digiSearch=true&term=${userStorage[chatId].search
 						}${userStorage[chatId].gender == 'man' ? '%20мужские' : '%20женские'
 						}&params=%7Cfilter%3Dcategories%3A46%7Csort%3DDEFAULT
 					`
-					const response = await fetch(link)
+					const response = await fetch(userStorage[chatId].link)
 
-					if (response.status === 200) {
-						console.log('ok')
-						bot.sendMessage(chatId, link)
-					} else {
-						console.log('false')
-					}
+					response.status === 200 ?
+						bot.editMessageText(userStorage[chatId].link, {
+							chat_id: chatId,
+							message_id: messageId - 1,
+							reply_markup: JSON.stringify({
+								inline_keyboard: [
+									[{ text: 'Домой', callback_data: 'home' }]
+								]
+							})
+						}
+						) : bot.deleteMessage(chatId, messageId - 1).then(bot.sendMessage(chatId, 'Я такого не нашел'))
+					break
 			}
 		}
 	})

@@ -118,18 +118,27 @@ const main = async () => {
             gender: userStorage[chatId].gender,
           };
 
-          const result = await basketshop(
-            bot,
-            chatId,
-            userStorage,
-            messageId,
-            msg,
-          );
+          const result = await basketshop(chatId, userStorage);
 
           if (result === false) {
             await bot.deleteMessage(chatId, messageId);
             await bot.editMessageText(
               `<b>${msg.chat.first_name}</b>, я ничего не нашел по твоему запросу 😔`,
+              {
+                chat_id: chatId,
+                message_id: messageId - 1,
+                parse_mode: "HTML",
+                reply_markup: JSON.stringify({
+                  inline_keyboard: [
+                    [
+                      {
+                        text: "🏠 Выход в главное меню",
+                        callback_data: "home",
+                      },
+                    ],
+                  ],
+                }),
+              },
             );
           } else {
             await bot.deleteMessage(chatId, messageId - 1);

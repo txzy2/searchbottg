@@ -1,7 +1,7 @@
 const cheerio = require("cheerio");
-const { logger } = require("../components/logger");
+const { logger, objectToString } = require("../components/logger");
 
-async function basketshop(bot, chatId, userStorage, messageId, msg) {
+async function basketshop(chatId, userStorage) {
   userStorage[chatId].link =
     `https://www.basketshop.ru/catalog/shoes/krossovki/${userStorage[chatId].search}/${userStorage[chatId].gender == "man" ? "men" : "women"}/oncourt/`;
 
@@ -11,7 +11,6 @@ async function basketshop(bot, chatId, userStorage, messageId, msg) {
     if (response.status === 200) {
       const html = await response.text();
       const $ = cheerio.load(html);
-
       const sneakers = [];
 
       $(".product-card").each((index, element) => {
@@ -23,13 +22,22 @@ async function basketshop(bot, chatId, userStorage, messageId, msg) {
         const price = parseFloat(
           $(element).find(".product-card__price").text().trim(),
         );
+        const size = $(element)
+          .find(".size-grid[data-tab='size-us']")
+          .text()
+          .trim();
+
+        const Size = size
+          .split("\n")
+          .map((item) => item.replace(/\t/g, ""))
+          .filter(Boolean);
 
         title = title.replace(/мужские кроссовки |Кроссовки /i, "");
-        sneakers.push({ id, title, imageUrl, price });
+        sneakers.push({ id, title, imageUrl, price, Size });
       });
 
       userStorage[chatId].sneakers = sneakers;
-
+      logger.info(objectToString(userStorage[chatId]));
       return userStorage;
     } else {
       return false;
@@ -39,10 +47,6 @@ async function basketshop(bot, chatId, userStorage, messageId, msg) {
     return false;
   }
 }
-
-module.exports = {
-  basketshop,
-};
 
 module.exports = {
   basketshop,

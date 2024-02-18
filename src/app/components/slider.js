@@ -3,7 +3,7 @@ async function sendSneakerInfo(chatId, i, bot, userStorage) {
   const totalSneakers = userStorage[chatId].sneakers.length;
 
   const sneaker = userStorage[chatId].sneakers[i];
-  const sizes = sneaker.Size.join(", ");
+  const sizes = sneaker.size.join(", ");
 
   const caption =
     `<b>👟 Кроссовки:</b> <i>${sneaker.title}</i>\n\n` +
@@ -39,7 +39,7 @@ async function updateSneakerInfo(chatId, i, bot, userStorage, messageId) {
   const totalSneakers = userStorage[chatId].sneakers.length;
 
   const sneaker = userStorage[chatId].sneakers[i];
-  const sizes = sneaker.Size.join(", ");
+  const sizes = sneaker.size.join(", ");
 
   const caption =
     `<b>👟 Кроссовки:</b> <i>${sneaker.title}</i>\n\n` +

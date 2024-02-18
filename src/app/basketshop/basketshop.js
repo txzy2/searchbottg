@@ -25,15 +25,13 @@ async function basketshop(chatId, userStorage) {
         const size = $(element)
           .find(".size-grid[data-tab='size-us']")
           .text()
-          .trim();
-
-        const Size = size
+          .trim()
           .split("\n")
           .map((item) => item.replace(/\t/g, ""))
           .filter(Boolean);
 
         title = title.replace(/мужские кроссовки |Кроссовки /i, "");
-        sneakers.push({ id, title, imageUrl, price, Size });
+        sneakers.push({ id, title, imageUrl, price, size });
       });
 
       userStorage[chatId].sneakers = sneakers;

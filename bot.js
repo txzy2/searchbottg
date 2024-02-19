@@ -8,6 +8,7 @@ const {
   sendSneakerInfo,
   updateSneakerInfo,
 } = require("./src/app/components/slider");
+const { mainMessage } = require("./src/app/components/main-message");
 
 config();
 const bot = new TelegramApi(process.env.TOKEN, { polling: true });
@@ -17,21 +18,7 @@ const main = async () => {
   console.log("Bot create by Anton Kamaev");
 
   bot.onText(/\/start/, async (msg) => {
-    bot.sendMessage(
-      msg.chat.id,
-      `<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
-      {
-        parse_mode: "HTML",
-        reply_markup: JSON.stringify({
-          inline_keyboard: [
-            [
-              { text: "Мужские", callback_data: "man" },
-              { text: "Женские", callback_data: "woman" },
-            ],
-          ],
-        }),
-      },
-    );
+    await mainMessage(bot, msg.chat.id, msg.chat.first_name);
     logger.info(
       `${msg.chat.first_name} start using bot\n${objectToString(msg.from)}`,
     );
@@ -64,7 +51,8 @@ const main = async () => {
         };
 
         bot.editMessageText(
-          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n` +
+          `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
           {
             chat_id: chat_id,
             message_id: msg.message.message_id,
@@ -82,7 +70,8 @@ const main = async () => {
         };
 
         bot.editMessageText(
-          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n` +
+          `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
           {
             chat_id: chat_id,
             message_id: msg.message.message_id,
@@ -122,21 +111,7 @@ const main = async () => {
 
       case "home":
         bot.deleteMessage(chat_id, msg.message.message_id);
-        bot.sendMessage(
-          chat_id,
-          `<b>✌🏼 Yo <i>${msg.message.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
-          {
-            parse_mode: "HTML",
-            reply_markup: JSON.stringify({
-              inline_keyboard: [
-                [
-                  { text: "Мужские", callback_data: "man" },
-                  { text: "Женские", callback_data: "woman" },
-                ],
-              ],
-            }),
-          },
-        );
+        await mainMessage(bot, chat_id, msg.message.chat.first_name);
         break;
     }
   });

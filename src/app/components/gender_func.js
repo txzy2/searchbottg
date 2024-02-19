@@ -1,7 +1,7 @@
 const gender_option = async (bot, msg, userStorage) => {
 	bot.editMessageText(
 		`✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"
-		} стиль кроссовок.\n\n<i>💭 Теперь давай выберем стилькроссовок</i>`,
+		} стиль кроссовок.\n\n<i>💭 Теперь давай выберем стиль кроссовок</i>`,
 
 		{
 			chat_id: msg.message.chat.id,

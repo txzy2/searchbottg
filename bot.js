@@ -38,24 +38,25 @@ const main = async () => {
 
   /*Callbacks controller*/
   bot.on("callback_query", async (msg) => {
-    const chat_id = msg.message.chat.id;
-    const user = msg.message.chat.first_name;
+    const {
+      chat: { id: chat_id, first_name: username },
+      message_id: msg_id,
+    } = msg.message;
 
     switch (msg.data) {
       case "man":
         userStorage[chat_id] = { gender: msg.data };
         await gender_option(bot, msg, userStorage);
-        logger.info(`${user} select ${userStorage[chat_id].gender}`);
+        logger.info(`${username} select ${userStorage[chat_id].gender}`);
         break;
 
       case "woman":
         userStorage[chat_id] = { gender: msg.data };
         await gender_option(bot, msg, userStorage);
-        logger.info(`${user} select ${userStorage[chat_id].gender}`);
+        logger.info(`${username} select ${userStorage[chat_id].gender}`);
         break;
 
       case "life":
-        // TODO: менять userStorage => менять link
         userStorage[chat_id] = {
           state: "awaitText",
           gender: userStorage[chat_id].gender,
@@ -66,7 +67,6 @@ const main = async () => {
         break;
 
       case "court":
-        // TODO: менять userStorage => менять link
         userStorage[chat_id] = {
           state: "awaitText",
           gender: userStorage[chat_id].gender,
@@ -82,12 +82,13 @@ const main = async () => {
             1 +
             userStorage[chat_id].sneakers.length) %
           userStorage[chat_id].sneakers.length;
+
         await updateSneakerInfo(
           chat_id,
           userStorage[chat_id].currentIndex,
           bot,
           userStorage,
-          msg.message.message_id,
+          msg_id,
         );
         break;
 
@@ -95,25 +96,26 @@ const main = async () => {
         userStorage[chat_id].currentIndex =
           (userStorage[chat_id].currentIndex + 1) %
           userStorage[chat_id].sneakers.length;
+
         await updateSneakerInfo(
           chat_id,
           userStorage[chat_id].currentIndex,
           bot,
           userStorage,
-          msg.message.message_id,
+          msg_id,
         );
         break;
 
       case "home":
-        bot.deleteMessage(chat_id, msg.message.message_id);
-        await mainMessage(bot, chat_id, msg.message.chat.first_name);
+        bot.deleteMessage(chat_id, msg_id);
+        await mainMessage(bot, chat_id, username);
         break;
     }
   });
 
   bot.on("text", async (msg) => {
-    const chatId = msg.chat.id;
-    const messageId = msg.message_id;
+    let { chat, message_id: messageId } = msg;
+    const chatId = chat.id;
 
     if (userStorage[chatId]) {
       switch (userStorage[chatId].state) {
@@ -124,7 +126,7 @@ const main = async () => {
             style: userStorage[chatId].style,
           };
 
-          const result = await basketshop(chatId, userStorage);
+          let result = await basketshop(chatId, userStorage);
 
           if (result === false) {
             await bot.deleteMessage(chatId, messageId);
@@ -147,9 +149,6 @@ const main = async () => {
               },
             );
           } else {
-            // await bot.deleteMessage(chatId, messageId - 1);
-            // await bot.deleteMessage(chatId, messageId);
-
             userStorage[chatId].currentIndex = 0;
             await sendSneakerInfo(
               chatId,

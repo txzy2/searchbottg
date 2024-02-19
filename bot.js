@@ -17,7 +17,6 @@ const main = async () => {
   console.log("Bot create by Anton Kamaev");
 
   bot.onText(/\/start/, async (msg) => {
-    // bot.deleteMessage(msg.chat.id, msg.message_id - 1); bot.deleteMessage(msg.chat.id, msg.message_id);
     bot.sendMessage(
       msg.chat.id,
       `<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
@@ -56,23 +55,41 @@ const main = async () => {
         logger.info(`${user} select ${userStorage[chat_id].gender}`);
         break;
 
-      case "home":
-        bot.deleteMessage(chat_id, msg.message.message_id);
-        bot.sendMessage(
-          chat_id,
-          `<b>✌🏼 Yo <i>${msg.message.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
+      case "life":
+        // TODO: менять userStorage => менять link
+        userStorage[chat_id] = {
+          state: "awaitText",
+          gender: userStorage[chat_id].gender,
+          style: "lifestyle",
+        };
+
+        bot.editMessageText(
+          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
           {
+            chat_id: chat_id,
+            message_id: msg.message.message_id,
             parse_mode: "HTML",
-            reply_markup: JSON.stringify({
-              inline_keyboard: [
-                [
-                  { text: "Мужские", callback_data: "man" },
-                  { text: "Женские", callback_data: "woman" },
-                ],
-              ],
-            }),
           },
         );
+        break;
+
+      case "court":
+        // TODO: менять userStorage => менять link
+        userStorage[chat_id] = {
+          state: "awaitText",
+          gender: userStorage[chat_id].gender,
+          style: "court",
+        };
+
+        bot.editMessageText(
+          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+          {
+            chat_id: chat_id,
+            message_id: msg.message.message_id,
+            parse_mode: "HTML",
+          },
+        );
+
         break;
 
       case "prev_btn":
@@ -102,6 +119,25 @@ const main = async () => {
           msg.message.message_id,
         );
         break;
+
+      case "home":
+        bot.deleteMessage(chat_id, msg.message.message_id);
+        bot.sendMessage(
+          chat_id,
+          `<b>✌🏼 Yo <i>${msg.message.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
+          {
+            parse_mode: "HTML",
+            reply_markup: JSON.stringify({
+              inline_keyboard: [
+                [
+                  { text: "Мужские", callback_data: "man" },
+                  { text: "Женские", callback_data: "woman" },
+                ],
+              ],
+            }),
+          },
+        );
+        break;
     }
   });
 
@@ -115,6 +151,7 @@ const main = async () => {
           userStorage[chatId] = {
             search: msg.text,
             gender: userStorage[chatId].gender,
+            style: userStorage[chatId].style,
           };
 
           const result = await basketshop(chatId, userStorage);

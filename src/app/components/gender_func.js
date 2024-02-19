@@ -7,10 +7,15 @@ const gender_option = async (bot, msg, userStorage) => {
 			chat_id: msg.message.chat.id,
 			message_id: msg.message.message_id,
 			parse_mode: "HTML",
+			reply_markup: JSON.stringify({
+				inline_keyboard: [
+					[{ text: "Lifestyle", callback_data: "life" }],
+					[{ text: "OnCourt", callback_data: "court" }],
+				],
+			}),
 		},
 	);
 	userStorage[msg.message.chat.id] = {
-		state: "awaitText",
 		gender: userStorage[msg.message.chat.id].gender,
 	};
 };

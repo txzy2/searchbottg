@@ -14,6 +14,18 @@ config();
 const bot = new TelegramApi(process.env.TOKEN, { polling: true });
 const userStorage = {};
 
+async function sendMessage(bot, chat_id, msg) {
+  bot.editMessageText(
+    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n` +
+    `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+    {
+      chat_id: chat_id,
+      message_id: msg.message.message_id,
+      parse_mode: "HTML",
+    },
+  );
+}
+
 const main = async () => {
   console.log("Bot create by Anton Kamaev");
 
@@ -49,16 +61,8 @@ const main = async () => {
           gender: userStorage[chat_id].gender,
           style: "lifestyle",
         };
+        await sendMessage(bot, chat_id, msg);
 
-        bot.editMessageText(
-          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n` +
-          `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
-          {
-            chat_id: chat_id,
-            message_id: msg.message.message_id,
-            parse_mode: "HTML",
-          },
-        );
         break;
 
       case "court":
@@ -69,16 +73,7 @@ const main = async () => {
           style: "court",
         };
 
-        bot.editMessageText(
-          `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == "man" ? "мужской" : "женский"} стиль кроссовок.\n\n` +
-          `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
-          {
-            chat_id: chat_id,
-            message_id: msg.message.message_id,
-            parse_mode: "HTML",
-          },
-        );
-
+        await sendMessage(bot, chat_id, msg);
         break;
 
       case "prev_btn":

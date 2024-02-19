@@ -17,8 +17,7 @@ const main = async () => {
   console.log("Bot create by Anton Kamaev");
 
   bot.onText(/\/start/, async (msg) => {
-    bot.deleteMessage(msg.chat.id, msg.message_id - 1);
-    bot.deleteMessage(msg.chat.id, msg.message_id);
+    // bot.deleteMessage(msg.chat.id, msg.message_id - 1); bot.deleteMessage(msg.chat.id, msg.message_id);
     bot.sendMessage(
       msg.chat.id,
       `<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
@@ -141,8 +140,8 @@ const main = async () => {
               },
             );
           } else {
-            await bot.deleteMessage(chatId, messageId - 1);
-            await bot.deleteMessage(chatId, messageId);
+            // await bot.deleteMessage(chatId, messageId - 1);
+            // await bot.deleteMessage(chatId, messageId);
 
             userStorage[chatId].currentIndex = 0;
             await sendSneakerInfo(

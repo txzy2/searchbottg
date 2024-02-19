@@ -3,8 +3,9 @@ const { logger, objectToString } = require("../components/logger");
 
 async function basketshop(chatId, userStorage) {
   userStorage[chatId].link =
-    `https://www.basketshop.ru/catalog/shoes/krossovki/${userStorage[chatId].search}/${userStorage[chatId].gender == "man" ? "men" : "women"}/${userStorage[chatId].style}/`;
+    `https://www.basketshop.ru/catalog/shoes/krossovki/${userStorage[chatId].search.toLowerCase()}/${userStorage[chatId].gender == "man" ? "men" : "women"}/${userStorage[chatId].style}/`;
 
+  console.log(userStorage[chatId].link);
   try {
     const response = await fetch(userStorage[chatId].link);
 

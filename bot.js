@@ -70,7 +70,7 @@ const main = async () => {
         userStorage[chat_id] = {
           state: "awaitText",
           gender: userStorage[chat_id].gender,
-          style: "court",
+          style: "oncourt",
         };
 
         await sendMessage(bot, chat_id, msg);

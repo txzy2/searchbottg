@@ -3,9 +3,10 @@ const { logger, objectToString } = require("../components/logger");
 
 async function basketshop(chatId, userStorage) {
   userStorage[chatId].link =
-    `https://www.basketshop.ru/catalog/shoes/krossovki/${userStorage[chatId].search.toLowerCase()}/${userStorage[chatId].gender == "man" ? "men" : "women"}/${userStorage[chatId].style}/`;
+    `https://www.basketshop.ru/catalog/shoes/krossovki` +
+    `/${userStorage[chatId].search.toLowerCase()}` +
+    `/${userStorage[chatId].gender == "man" ? "men" : "women"}/${userStorage[chatId].style}/`;
 
-  console.log(userStorage[chatId].link);
   try {
     const response = await fetch(userStorage[chatId].link);
 
@@ -16,7 +17,11 @@ async function basketshop(chatId, userStorage) {
 
       $(".product-card").each((index, element) => {
         const id = $(element).data("id");
-        let title = $(element).find(".product-card__name").text().trim();
+        let title = $(element)
+          .find(".product-card__name")
+          .text()
+          .trim()
+          .replace(/мужские кроссовки |Кроссовки /i, "");
         const imageUrl = $(element)
           .find(".product-card__image img")
           .attr("data-src");
@@ -31,7 +36,6 @@ async function basketshop(chatId, userStorage) {
           .map((item) => item.replace(/\t/g, ""))
           .filter(Boolean);
 
-        title = title.replace(/мужские кроссовки |Кроссовки /i, "");
         sneakers.push({ id, title, imageUrl, price, size });
       });
 

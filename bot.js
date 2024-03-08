@@ -126,7 +126,7 @@ const main = async () => {
             style: userStorage[chatId].style,
           };
 
-          let result = await basketshop(chatId, userStorage);
+          const result = await basketshop(chatId, userStorage);
 
           if (result === false) {
             await bot.deleteMessage(chatId, messageId);

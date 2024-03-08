@@ -21,6 +21,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.4.4",
+    "google-translate-api": "^2.3.0",
     "node-fetch": "^3.3.2",
     "node-telegram-bot-api": "^0.64.0",
     "nodemon": "^3.0.3",

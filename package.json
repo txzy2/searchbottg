@@ -11,12 +11,7 @@
   "main": "bot.js",
   "exports": "./lib/index.js",
   "scripts": {
-    "dev": "nodemon bot.js",
-    "lint": "npm-run-all \"lint:*\"",
-    "lint:eslint-docs": "npm-run-all \"update:eslint-docs -- --check\"",
-    "lint:js": "eslint bot.js",
-    "test": "mocha tests --recursive",
-    "update:eslint-docs": "eslint-doc-generator"
+    "dev": "nodemon bot.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
@@ -31,7 +26,6 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.19.0",
     "eslint-doc-generator": "^1.0.0",
     "eslint-plugin-eslint-plugin": "^5.0.0",
     "eslint-plugin-node": "^11.1.0",
@@ -41,8 +35,6 @@
   "engines": {
     "node": "^14.17.0 || ^16.0.0 || >= 18.0.0"
   },
-  "peerDependencies": {
-    "eslint": ">=7"
-  },
+  "peerDependencies": {},
   "license": "ISC"
 }

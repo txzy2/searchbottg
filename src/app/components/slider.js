@@ -24,8 +24,8 @@ async function sendSneakerInfo(chatId, i, bot, userStorage) {
         ],
         [
           {
-            text: "🔗 Ссылка на источник",
-            web_app: { url: userStorage[chatId].link },
+            text: `🔗 Ссылка (${sneaker.title})`,
+            web_app: { url: `https://basketshop.ru${sneaker.href}` },
           },
         ],
         [{ text: "🏠 Выход в главное меню", callback_data: "home" }],
@@ -70,8 +70,8 @@ async function updateSneakerInfo(chatId, i, bot, userStorage, messageId) {
           ],
           [
             {
-              text: "🔗 Ссылка на источник",
-              web_app: { url: userStorage[chatId].link },
+              text: `🔗 Ссылка (${sneaker.title})`,
+              web_app: { url: `https://basketshop.ru${sneaker.href}` },
             },
           ],
 

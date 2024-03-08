@@ -35,8 +35,9 @@ async function basketshop(chatId, userStorage) {
           .split("\n")
           .map((item) => item.replace(/\t/g, ""))
           .filter(Boolean);
+        const href = $(element).find(".product-card__name").attr("href").trim();
 
-        sneakers.push({ id, title, imageUrl, price, size });
+        sneakers.push({ id, title, imageUrl, price, size, href }); 
       });
 
       userStorage[chatId].sneakers = sneakers;

@@ -3,7 +3,7 @@ const {config} = require('dotenv')
 
 const {gender_option} = require('./src/app/components/gender_func')
 const {logger, objectToString} = require('./src/app/components/logger')
-const {basketshop} = require('./src/app/basketshop/basketshop')
+const {basketshop, clothPush} = require('./src/app/basketshop/basketshop')
 const {
   sendSneakerInfo,
   updateSneakerInfo,
@@ -32,7 +32,28 @@ const main = async () => {
   console.log('Bot create by Anton Kamaev')
 
   bot.onText(/\/start/, async msg => {
-    await mainMessage(bot, msg.chat.id, msg.chat.first_name)
+    bot.sendMessage(
+      msg.chat.id,
+      `<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу на маркетплейсе <i><a href="https://www.basketshop.ru/">Basketshop</a></i>.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: JSON.stringify({
+          inline_keyboard: [
+            [
+              {
+                text: 'Basketshop',
+                web_app: {url: 'https://www.basketshop.ru/'},
+              },
+            ],
+            [
+              {text: 'Мужские', callback_data: 'man'},
+              {text: 'Женские', callback_data: 'woman'},
+            ],
+          ],
+        }),
+      },
+    )
+
     logger.info(
       `${msg.chat.first_name} start using bot\n${objectToString(msg.from)}`,
     )
@@ -58,6 +79,23 @@ const main = async () => {
         logger.info(`${username} select ${userStorage[chat_id].gender}`)
         break
 
+      case 'shoe':
+        await bot.editMessageText(
+          `<i><b>${username}</b></i>, давай выберем стиль кроссовок`,
+          {
+            chat_id: chat_id,
+            message_id: msg_id,
+            parse_mode: 'HTML',
+            reply_markup: JSON.stringify({
+              inline_keyboard: [
+                [{text: 'lifestyle', callback_data: 'life'}],
+                [{text: 'OnCourt', callback_data: 'court'}],
+              ],
+            }),
+          },
+        )
+        break
+
       case 'life':
         userStorage[chat_id] = {
           state: 'awaitText',
@@ -66,6 +104,46 @@ const main = async () => {
         }
         await sendMessage(bot, chat_id, msg)
 
+        break
+
+      case 'cloth':
+        const cloth = await clothPush(userStorage, chat_id)
+        if (cloth === false) {
+          await bot.sendMessage(chat_id, 'error')
+        }
+
+        const buttons = userStorage[chat_id].clothes.reduce(
+          (acc, item, index) => {
+            if (index % 2 === 0) {
+              acc.push([{text: item, callback_data: 'cloth_select'}])
+            } else {
+              acc[acc.length - 1].push({
+                text: item,
+                callback_data: 'cloth_select',
+              })
+            }
+            return acc
+          },
+          [],
+        )
+        buttons.push([{text: '🏠 Выход в главное меню', callback_data: 'home'}])
+        const replyMarkup = {
+          inline_keyboard: buttons,
+        }
+
+        await bot.editMessageText(
+          `<i><b>${username}</b></i>, давай выберем стиль одежды`,
+          {
+            chat_id: chat_id,
+            message_id: msg_id,
+            parse_mode: 'HTML',
+            reply_markup: JSON.stringify(replyMarkup),
+          },
+        )
+        break
+
+      case 'cloth_select':
+        console.log(msg)
         break
 
       case 'court':

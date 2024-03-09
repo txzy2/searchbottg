@@ -52,8 +52,34 @@ async function basketshop(chatId, userStorage) {
   }
 }
 
-//NOTE: Сделать обработку страницы по href
+//TODO: clothPush
+
+async function clothPush(userStorage, id) {
+  const cloth_link = 'https://www.basketshop.ru/catalog/clothes/'
+
+  try {
+    const response = await fetch(cloth_link)
+    if (response.status === 200) {
+      const html = await response.text()
+      const $ = cheerio.load(html)
+      const clothes = []
+
+      $('.checkbox-list__item')
+        .find('label')
+        .each(function () {
+          clothes.push($(this).text())
+        })
+
+      userStorage[id].clothes = clothes.slice(5, 17)
+      return userStorage
+    }
+  } catch (error) {
+    logger.info(error)
+    return false
+  }
+}
 
 module.exports = {
   basketshop,
+  clothPush,
 }

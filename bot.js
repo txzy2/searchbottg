@@ -1,24 +1,25 @@
 const TelegramApi = require('node-telegram-bot-api')
-const { config } = require('dotenv')
+const {config} = require('dotenv')
 
-const { gender_option } = require('./src/app/components/gender_func')
-const { logger, objectToString } = require('./src/app/components/logger')
-const { basketshop, clothPush } = require('./src/app/basketshop/basketshop')
+const {gender_option} = require('./src/app/components/gender_func')
+const {logger, objectToString} = require('./src/app/components/logger')
+const {basketshop, clothPush} = require('./src/app/basketshop/basketshop')
 const {
   sendProductInfo,
   updateProductInfo,
 } = require('./src/app/components/slider')
-const { mainMessage } = require('./src/app/components/main-message')
+const {mainMessage} = require('./src/app/components/main-message')
 
 config()
-const bot = new TelegramApi(process.env.TOKEN, { polling: true })
+const bot = new TelegramApi(process.env.TOKEN, {polling: true})
 const userStorage = {}
 
 async function sendMessage(bot, chat_id, msg) {
   bot.editMessageText(
-    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
+    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${
+      userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
     } стиль кроссовок.\n\n` +
-    `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+      `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
     {
       chat_id: chat_id,
       message_id: msg.message.message_id,
@@ -73,19 +74,19 @@ const main = async () => {
   /*Callbacks controller*/
   bot.on('callback_query', async msg => {
     const {
-      chat: { id: chat_id, first_name: username },
+      chat: {id: chat_id, first_name: username},
       message_id: msg_id,
     } = msg.message
 
     switch (msg.data) {
       case 'man':
-        userStorage[chat_id] = { gender: msg.data }
+        userStorage[chat_id] = {gender: msg.data}
         await gender_option(bot, msg, userStorage)
         logger.info(`${username} select ${userStorage[chat_id].gender}`)
         break
 
       case 'woman':
-        userStorage[chat_id] = { gender: msg.data }
+        userStorage[chat_id] = {gender: msg.data}
         await gender_option(bot, msg, userStorage)
         logger.info(`${username} select ${userStorage[chat_id].gender}`)
         break
@@ -99,8 +100,8 @@ const main = async () => {
             parse_mode: 'HTML',
             reply_markup: JSON.stringify({
               inline_keyboard: [
-                [{ text: '🥰 Lifestyle', callback_data: 'life' }],
-                [{ text: '🏀 Для баскетбола', callback_data: 'court' }],
+                [{text: '🥰 Lifestyle', callback_data: 'life'}],
+                [{text: '🏀 Для баскетбола', callback_data: 'court'}],
               ],
             }),
           },
@@ -176,7 +177,7 @@ const main = async () => {
   })
 
   bot.on('text', async msg => {
-    let { chat, message_id: messageId } = msg
+    let {chat, message_id: messageId} = msg
 
     const chatId = chat.id
 

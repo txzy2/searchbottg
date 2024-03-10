@@ -11,24 +11,24 @@ async function sendOrUpdatePhoto(
   const replyMarkup = JSON.stringify({
     inline_keyboard: [
       [
-        { text: '<<', callback_data: 'prev_btn' },
-        { text: `${currentIndex}/${totalItems}`, callback_data: 'total' },
-        { text: '>>', callback_data: 'next_btn' },
+        {text: '<<', callback_data: 'prev_btn'},
+        {text: `${currentIndex}/${totalItems}`, callback_data: 'total'},
+        {text: '>>', callback_data: 'next_btn'},
       ],
       [
         {
           text: `🔗 Ссылка (${item.title})`,
-          web_app: { url: `https://basketshop.ru${item.href}` },
+          web_app: {url: `https://basketshop.ru${item.href}`},
         },
       ],
-      [{ text: '🏠 Выход в главное меню', callback_data: 'home' }],
+      [{text: '🏠 Выход в главное меню', callback_data: 'home'}],
     ],
   })
 
   if (messageId) {
     await bot.editMessageMedia(
-      { type: 'photo', media: photo, caption, parse_mode: 'HTML' },
-      { chat_id: chatId, message_id: messageId, reply_markup: replyMarkup },
+      {type: 'photo', media: photo, caption, parse_mode: 'HTML'},
+      {chat_id: chatId, message_id: messageId, reply_markup: replyMarkup},
     )
   } else {
     await bot.sendPhoto(chatId, photo, {

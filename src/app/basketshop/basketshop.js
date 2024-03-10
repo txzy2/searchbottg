@@ -1,5 +1,5 @@
 const cheerio = require('cheerio')
-const { logger, objectToString } = require('../components/logger')
+const {logger, objectToString} = require('../components/logger')
 
 let links = {
   link: 'https://www.basketshop.ru/catalog/shoes/krossovki',
@@ -42,7 +42,7 @@ async function basketshop(chatId, userStorage) {
           .filter(Boolean)
         const href = $(element).find('.product-card__name').attr('href').trim()
 
-        sneakers.push({ id, title, imageUrl, price, size, href })
+        sneakers.push({id, title, imageUrl, price, size, href})
       })
 
       userStorage[chatId].sneakers = sneakers
@@ -87,7 +87,7 @@ async function clothPush(userStorage, id) {
         )
         const href = $(e).find('.product-card__image-link').attr('href').trim()
 
-        clothes.push({ title, imageUrl, price, clothes_size, href })
+        clothes.push({title, imageUrl, price, clothes_size, href})
       })
 
       userStorage[id].clothes = clothes

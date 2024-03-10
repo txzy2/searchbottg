@@ -8,13 +8,13 @@ async function mainMessage(bot, chat_id, username, message_id) {
         inline_keyboard: [
           [
             {
-              text: 'Basketshop',
-              web_app: {url: 'https://www.basketshop.ru/'},
+              text: '🏀 Basketshop',
+              web_app: { url: 'https://www.basketshop.ru/' },
             },
           ],
           [
-            {text: 'Мужские', callback_data: 'man'},
-            {text: 'Женские', callback_data: 'woman'},
+            { text: '👨🏼Мужчина', callback_data: 'man' },
+            { text: '👩🏼‍🦰 Женщина', callback_data: 'woman' },
           ],
         ],
       }),

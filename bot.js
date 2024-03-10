@@ -1,25 +1,24 @@
 const TelegramApi = require('node-telegram-bot-api')
-const {config} = require('dotenv')
+const { config } = require('dotenv')
 
-const {gender_option} = require('./src/app/components/gender_func')
-const {logger, objectToString} = require('./src/app/components/logger')
-const {basketshop, clothPush} = require('./src/app/basketshop/basketshop')
+const { gender_option } = require('./src/app/components/gender_func')
+const { logger, objectToString } = require('./src/app/components/logger')
+const { basketshop, clothPush } = require('./src/app/basketshop/basketshop')
 const {
-  sendSneakerInfo,
-  updateSneakerInfo,
+  sendProductInfo,
+  updateProductInfo,
 } = require('./src/app/components/slider')
-const {mainMessage} = require('./src/app/components/main-message')
+const { mainMessage } = require('./src/app/components/main-message')
 
 config()
-const bot = new TelegramApi(process.env.TOKEN, {polling: true})
+const bot = new TelegramApi(process.env.TOKEN, { polling: true })
 const userStorage = {}
 
 async function sendMessage(bot, chat_id, msg) {
   bot.editMessageText(
-    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${
-      userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
+    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
     } стиль кроссовок.\n\n` +
-      `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
+    `💭 Теперь напиши мне пожалуйста какие кроссовки будем искать <i>(Например: nike или adidas)</i>`,
     {
       chat_id: chat_id,
       message_id: msg.message.message_id,
@@ -28,32 +27,44 @@ async function sendMessage(bot, chat_id, msg) {
   )
 }
 
+async function updateProduct(
+  chat_id,
+  bot,
+  userStorage,
+  msg_id,
+  variant,
+  operation,
+) {
+  const variantInfo =
+    userStorage[chat_id].variant === 'sneaker'
+      ? userStorage[chat_id].sneakers
+      : userStorage[chat_id].clothes
+
+  const totalProducts = variantInfo.length
+
+  if (operation === 'prev') {
+    userStorage[chat_id].currentIndex =
+      (userStorage[chat_id].currentIndex - 1 + totalProducts) % totalProducts
+  } else if (operation === 'next') {
+    userStorage[chat_id].currentIndex =
+      (userStorage[chat_id].currentIndex + 1) % totalProducts
+  }
+
+  await updateProductInfo(
+    chat_id,
+    userStorage[chat_id].currentIndex,
+    bot,
+    userStorage,
+    msg_id,
+    variant,
+  )
+}
+
 const main = async () => {
   console.log('Bot create by Anton Kamaev')
 
   bot.onText(/\/start/, async msg => {
-    bot.sendMessage(
-      msg.chat.id,
-      `<b>✌🏼 Yo <i>${msg.chat.first_name}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу на маркетплейсе <i><a href="https://www.basketshop.ru/">Basketshop</a></i>.\n\n<i>💭 Давай для начала выберем твой пол.</i>`,
-      {
-        parse_mode: 'HTML',
-        reply_markup: JSON.stringify({
-          inline_keyboard: [
-            [
-              {
-                text: 'Basketshop',
-                web_app: {url: 'https://www.basketshop.ru/'},
-              },
-            ],
-            [
-              {text: 'Мужские', callback_data: 'man'},
-              {text: 'Женские', callback_data: 'woman'},
-            ],
-          ],
-        }),
-      },
-    )
-
+    mainMessage(bot, msg.chat.id, msg.chat.first_name, msg.message_id)
     logger.info(
       `${msg.chat.first_name} start using bot\n${objectToString(msg.from)}`,
     )
@@ -62,19 +73,19 @@ const main = async () => {
   /*Callbacks controller*/
   bot.on('callback_query', async msg => {
     const {
-      chat: {id: chat_id, first_name: username},
+      chat: { id: chat_id, first_name: username },
       message_id: msg_id,
     } = msg.message
 
     switch (msg.data) {
       case 'man':
-        userStorage[chat_id] = {gender: msg.data}
+        userStorage[chat_id] = { gender: msg.data }
         await gender_option(bot, msg, userStorage)
         logger.info(`${username} select ${userStorage[chat_id].gender}`)
         break
 
       case 'woman':
-        userStorage[chat_id] = {gender: msg.data}
+        userStorage[chat_id] = { gender: msg.data }
         await gender_option(bot, msg, userStorage)
         logger.info(`${username} select ${userStorage[chat_id].gender}`)
         break
@@ -88,8 +99,8 @@ const main = async () => {
             parse_mode: 'HTML',
             reply_markup: JSON.stringify({
               inline_keyboard: [
-                [{text: 'lifestyle', callback_data: 'life'}],
-                [{text: 'OnCourt', callback_data: 'court'}],
+                [{ text: '🥰 Lifestyle', callback_data: 'life' }],
+                [{ text: '🏀 Для баскетбола', callback_data: 'court' }],
               ],
             }),
           },
@@ -107,43 +118,22 @@ const main = async () => {
         break
 
       case 'cloth':
+        await bot.deleteMessage(chat_id, msg_id)
         const cloth = await clothPush(userStorage, chat_id)
         if (cloth === false) {
           await bot.sendMessage(chat_id, 'error')
         }
 
-        const buttons = userStorage[chat_id].clothes.reduce(
-          (acc, item, index) => {
-            if (index % 2 === 0) {
-              acc.push([{text: item, callback_data: 'cloth_select'}])
-            } else {
-              acc[acc.length - 1].push({
-                text: item,
-                callback_data: 'cloth_select',
-              })
-            }
-            return acc
-          },
-          [],
+        userStorage[chat_id].currentIndex = 0
+        userStorage[chat_id].variant = 'cloth'
+        await sendProductInfo(
+          chat_id,
+          userStorage[chat_id].currentIndex,
+          bot,
+          userStorage,
+          'cloth',
         )
-        buttons.push([{text: '🏠 Выход в главное меню', callback_data: 'home'}])
-        const replyMarkup = {
-          inline_keyboard: buttons,
-        }
 
-        await bot.editMessageText(
-          `<i><b>${username}</b></i>, давай выберем стиль одежды`,
-          {
-            chat_id: chat_id,
-            message_id: msg_id,
-            parse_mode: 'HTML',
-            reply_markup: JSON.stringify(replyMarkup),
-          },
-        )
-        break
-
-      case 'cloth_select':
-        console.log(msg)
         break
 
       case 'court':
@@ -157,32 +147,24 @@ const main = async () => {
         break
 
       case 'prev_btn':
-        userStorage[chat_id].currentIndex =
-          (userStorage[chat_id].currentIndex -
-            1 +
-            userStorage[chat_id].sneakers.length) %
-          userStorage[chat_id].sneakers.length
-
-        await updateSneakerInfo(
+        updateProduct(
           chat_id,
-          userStorage[chat_id].currentIndex,
           bot,
           userStorage,
           msg_id,
+          userStorage[chat_id].variant,
+          'prev',
         )
         break
 
       case 'next_btn':
-        userStorage[chat_id].currentIndex =
-          (userStorage[chat_id].currentIndex + 1) %
-          userStorage[chat_id].sneakers.length
-
-        await updateSneakerInfo(
+        updateProduct(
           chat_id,
-          userStorage[chat_id].currentIndex,
           bot,
           userStorage,
           msg_id,
+          userStorage[chat_id].variant,
+          'next',
         )
         break
 
@@ -194,7 +176,7 @@ const main = async () => {
   })
 
   bot.on('text', async msg => {
-    let {chat, message_id: messageId} = msg
+    let { chat, message_id: messageId } = msg
 
     const chatId = chat.id
 
@@ -230,12 +212,16 @@ const main = async () => {
               },
             )
           } else {
+            await bot.deleteMessage(chatId, messageId - 1)
+            await bot.deleteMessage(chatId, messageId)
             userStorage[chatId].currentIndex = 0
-            await sendSneakerInfo(
+            userStorage[chatId].variant = 'sneaker'
+            await sendProductInfo(
               chatId,
               userStorage[chatId].currentIndex,
               bot,
               userStorage,
+              'sneaker',
             )
           }
 

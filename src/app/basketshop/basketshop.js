@@ -1,9 +1,14 @@
 const cheerio = require('cheerio')
-const {logger, objectToString} = require('../components/logger')
+const { logger, objectToString } = require('../components/logger')
+
+let links = {
+  link: 'https://www.basketshop.ru/catalog/shoes/krossovki',
+  cloth_link: 'https://www.basketshop.ru/catalog/clothes',
+}
 
 async function basketshop(chatId, userStorage) {
   userStorage[chatId].link =
-    `https://www.basketshop.ru/catalog/shoes/krossovki` +
+    `${links.link}` +
     `/${userStorage[chatId].search.toLowerCase()}` +
     `/${userStorage[chatId].gender == 'man' ? 'men' : 'women'}/${userStorage[chatId].style}/`
 
@@ -37,7 +42,7 @@ async function basketshop(chatId, userStorage) {
           .filter(Boolean)
         const href = $(element).find('.product-card__name').attr('href').trim()
 
-        sneakers.push({id, title, imageUrl, price, size, href})
+        sneakers.push({ id, title, imageUrl, price, size, href })
       })
 
       userStorage[chatId].sneakers = sneakers
@@ -52,25 +57,41 @@ async function basketshop(chatId, userStorage) {
   }
 }
 
-//TODO: clothPush
-
 async function clothPush(userStorage, id) {
-  const cloth_link = 'https://www.basketshop.ru/catalog/clothes/'
-
   try {
-    const response = await fetch(cloth_link)
+    const response = await fetch(
+      `${links.cloth_link}/${userStorage[id].gender == 'man' ? 'men' : 'women'}`,
+    )
     if (response.status === 200) {
       const html = await response.text()
       const $ = cheerio.load(html)
       const clothes = []
 
-      $('.checkbox-list__item')
-        .find('label')
-        .each(function () {
-          clothes.push($(this).text())
-        })
+      $('.product-card').each((index, e) => {
+        const title = $(e)
+          .find('.product-card__name')
+          .find('span')
+          .text()
+          .trim()
+        const imageUrl = $(e).find('.product-card__image img').attr('data-src')
 
-      userStorage[id].clothes = clothes.slice(5, 17)
+        let clothes_size = $(e)
+          .find('.size-grid__i')
+          .text()
+          .trim()
+          .split('\n')
+          .map(item => item.replace(/\t/g, ''))
+          .filter(item => item !== '')
+
+        const href = $(e).find('.product-card__image-link').attr('href').trim()
+
+        clothes_size = [...new Set(clothes_size)]
+
+        clothes.push({ title, imageUrl, clothes_size, href })
+      })
+
+      userStorage[id].clothes = clothes
+      logger.info(objectToString(userStorage[id]))
       return userStorage
     }
   } catch (error) {

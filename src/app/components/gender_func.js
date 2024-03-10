@@ -1,7 +1,6 @@
 const gender_option = async (bot, msg, userStorage) => {
   bot.editMessageText(
-    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${
-      userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
+    `✌🏼 <b><i>${msg.message.chat.first_name}</i></b> ты выбрал ${userStorage[msg.message.chat.id].gender == 'man' ? 'мужской' : 'женский'
     } стиль кроссовок.\n\n<i>💭 Теперь давай что будем искать</i>`,
 
     {
@@ -10,8 +9,8 @@ const gender_option = async (bot, msg, userStorage) => {
       parse_mode: 'HTML',
       reply_markup: JSON.stringify({
         inline_keyboard: [
-          [{text: 'Одежда', callback_data: 'cloth'}],
-          [{text: 'Обувь', callback_data: 'shoe'}],
+          [{ text: '👚 Одежда', callback_data: 'cloth' }],
+          [{ text: '👟 Обувь', callback_data: 'shoe' }],
         ],
       }),
     },

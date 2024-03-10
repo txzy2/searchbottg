@@ -48,7 +48,10 @@ async function sendProductInfo(chatId, i, bot, userStorage, variant) {
     product = userStorage[chatId].clothes[i]
     totalItems = userStorage[chatId].clothes.length
 
-    caption = `<b>${product.title}</b>\n\n<i>➖ Размеры: ${product.clothes_size.join(', ')}</i>`
+    caption =
+      `<b>${product.title}</b>\n\n` +
+      `<i><b>➖ Размеры:</b> ${product.clothes_size.join(', ')}</i>\n\n` +
+      `<b><i>💸 Цена:</i></b> <code>${product.price}₽</code>\n\n`
   } else if (variant === 'sneaker') {
     product = userStorage[chatId].sneakers[i]
     totalItems = userStorage[chatId].sneakers.length
@@ -58,7 +61,7 @@ async function sendProductInfo(chatId, i, bot, userStorage, variant) {
       `<i>➖ Бренд:</i> ${userStorage[chatId].search}\n` +
       `<i>➖ Пол:</i> ${userStorage[chatId].gender}\n<i>` +
       `➖ Доступные размеры:</i> ${product.size.join(', ')} us\n\n` +
-      `<i>💸 Цена:</i> <code>${product.price}</code> руб\n\n`
+      `<b><i>💸 Цена:</i></b> <code>${product.price}₽</code>\n\n`
   }
 
   userStorage[chatId].variant = variant
@@ -89,7 +92,10 @@ async function updateProductInfo(
     product = userStorage[chatId].clothes[i]
     totalItems = userStorage[chatId].clothes.length
 
-    caption = `<b>${product.title}</b>\n\n<i>➖ Размеры: ${product.clothes_size.join(', ')}</i>`
+    caption =
+      `<b>${product.title}</b>\n\n` +
+      `<i><b>➖ Размеры:</b> ${product.clothes_size.join(', ')}</i>\n\n` +
+      `<b><i>💸 Цена:</i></b> <code>${product.price}₽</code>\n\n`
   } else if (variant === 'sneaker') {
     product = userStorage[chatId].sneakers[i]
     totalItems = userStorage[chatId].sneakers.length
@@ -97,9 +103,9 @@ async function updateProductInfo(
     caption =
       `<b>👟 Кроссовки:</b> <i>${product.title}</i>\n\n` +
       `<i>➖ Бренд:</i> ${userStorage[chatId].search}\n` +
-      `<i>➖ Пол:</i> ${userStorage[chatId].gender}\n<i>` +
-      `➖ Доступные размеры:</i> ${product.size.join(', ')} us\n\n` +
-      `<i>💸 Цена:</i> <code>${product.price}</code> руб\n\n`
+      `<i>➖ Пол:</i> ${userStorage[chatId].gender}\n` +
+      `<i>➖ Доступные размеры:</i> ${product.size.join(', ')} us\n\n` +
+      `<b><i>💸 Цена:</i></b> <code>${product.price}₽</code>\n\n`
   }
 
   await sendOrUpdatePhoto(

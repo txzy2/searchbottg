@@ -74,7 +74,6 @@ async function clothPush(userStorage, id) {
           .text()
           .trim()
         const imageUrl = $(e).find('.product-card__image img').attr('data-src')
-
         let clothes_size = $(e)
           .find('.size-grid__i')
           .text()
@@ -82,12 +81,13 @@ async function clothPush(userStorage, id) {
           .split('\n')
           .map(item => item.replace(/\t/g, ''))
           .filter(item => item !== '')
-
+        clothes_size = [...new Set(clothes_size)]
+        const price = parseFloat(
+          $(e).find('.product-card__price').text().trim(),
+        )
         const href = $(e).find('.product-card__image-link').attr('href').trim()
 
-        clothes_size = [...new Set(clothes_size)]
-
-        clothes.push({ title, imageUrl, clothes_size, href })
+        clothes.push({ title, imageUrl, price, clothes_size, href })
       })
 
       userStorage[id].clothes = clothes

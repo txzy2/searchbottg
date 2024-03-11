@@ -170,6 +170,7 @@ const main = async () => {
         break
 
       case 'home':
+        bot.deleteMessage(chat_id, msg_id)
         await mainMessage(bot, chat_id, username)
         break
     }

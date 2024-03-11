@@ -10,7 +10,9 @@ async function basketshop(chatId, userStorage) {
   userStorage[chatId].link =
     `${links.link}` +
     `/${userStorage[chatId].search.toLowerCase()}` +
-    `/${userStorage[chatId].gender == 'man' ? 'men' : 'women'}/${userStorage[chatId].style}/`
+    `/${userStorage[chatId].gender == 'man' ? 'men' : 'women'}/${
+      userStorage[chatId].style
+    }/`
 
   try {
     const response = await fetch(userStorage[chatId].link)
@@ -31,7 +33,7 @@ async function basketshop(chatId, userStorage) {
           .find('.product-card__image img')
           .attr('data-src')
         const price = parseFloat(
-          $(element).find('.product-card__price').text().trim(),
+          $(element).find('.product-card__price').text().trim()
         )
         const size = $(element)
           .find(".size-grid[data-tab='size-us']")
@@ -60,7 +62,7 @@ async function basketshop(chatId, userStorage) {
 async function clothPush(userStorage, id) {
   try {
     const response = await fetch(
-      `${links.cloth_link}/${userStorage[id].gender == 'man' ? 'men' : 'women'}`,
+      `${links.cloth_link}/${userStorage[id].gender == 'man' ? 'men' : 'women'}`
     )
     if (response.status === 200) {
       const html = await response.text()
@@ -83,7 +85,7 @@ async function clothPush(userStorage, id) {
           .filter(item => item !== '')
         clothes_size = [...new Set(clothes_size)]
         const price = parseFloat(
-          $(e).find('.product-card__price').text().trim(),
+          $(e).find('.product-card__price').text().trim()
         )
         const href = $(e).find('.product-card__image-link').attr('href').trim()
 

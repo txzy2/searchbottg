@@ -1,12 +1,13 @@
 async function mainMessage(bot, chat_id, username, message_id) {
   bot.sendMessage(
     chat_id,
-    `<b>✌🏼 Yo <i>${username}</i></b>! Я помогу тебе подобрать кроссовки по твоему запросу на маркетплейсе <i><a href="https://www.basketshop.ru/">Basketshop</a></i>.\n\n` +
-      `<i><b>🔗 Ссылка на GitHub: </b><a href="https://github.com/kamaeff/searchbottg">Searchbottg</a></i>\n` +
-      `<i><b>🔗 Ссылка на сайт создателя: </b><a href="http://94.228.124.88:3000/">KamaeffPage</a></i>\n\n` +
-      `<i>💭 Давай для начала выберем твой пол.</i>`,
+    `<i><b>✌🏼 Привет ${username}</b>! Давай помогу тебе подобрать кроссовки и одежду на маркетплейсе <b><a href="https://www.basketshop.ru/">Basketshop</a></b></i>.\n\n` +
+      `<i><b>🔗 Дополнительные ссылки:</b></i>\n` +
+      `<i><b>➖ GitHub: </b><a href="https://github.com/kamaeff/searchbottg">Searchbottg</a></i>\n` +
+      `<i><b>➖ Разработчик: </b><a href="http://94.228.124.88:3000/">KamaeffPage</a></i>`,
     {
       parse_mode: 'HTML',
+      disable_web_page_preview: true,
       reply_markup: JSON.stringify({
         inline_keyboard: [
           [
@@ -21,7 +22,7 @@ async function mainMessage(bot, chat_id, username, message_id) {
           ],
         ],
       }),
-    },
+    }
   )
 }
 
